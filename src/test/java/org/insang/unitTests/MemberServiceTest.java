@@ -29,7 +29,12 @@ public class MemberServiceTest {
 	
 	@InjectMocks
 	Memberservice memberService;
-
+	@Test
+	public void testDeleteAll(){
+		MockitoAnnotations.initMocks(this);
+		memberService.deleteAll();
+		verify(memberRepository, times(1)).deleteAll();
+	}
 	@Test
 	public void testFindAllInService() {
 		MockitoAnnotations.initMocks(this);

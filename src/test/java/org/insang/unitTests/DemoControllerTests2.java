@@ -55,40 +55,82 @@ import static org.hamcrest.Matchers.*;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-public class DemoControllerTests2 { 
-	
-  @MockBean
-  private Memberservice memberService;
-    
+public class DemoControllerTests2 {
 
-  @Test
-  public void createNewMember() {
-	  TestRestTemplate rt = new TestRestTemplate();
-	  Member m = new Member();
-	  m.setName("insang");
-	  m.setEmail("insang@hansung.ac.kr");
-	  m.setScore(30);
-	  ResponseEntity<Member> mem = rt.postForEntity("http://localhost:8080/member", m, Member.class);
-	  assertEquals("insang", mem.getBody().getName());
-	  assertEquals("insang@hansung.ac.kr", mem.getBody().getEmail());
-	  assertEquals(30, mem.getBody().getScore());
-  }
-  
-  @Test
-  public void deleteMember() {
-	  TestRestTemplate rt = new TestRestTemplate();
-	  Member m = new Member();
-	  m.setName("insang");
-	  m.setEmail("insang@hansung.ac.kr");
-	  m.setScore(30);
-	  ResponseEntity<Member> mem = rt.postForEntity("http://localhost:8080/member", m, Member.class);
-	  
-	  HttpHeaders headers = new HttpHeaders();
-	  HttpEntity entity = new HttpEntity(headers);
-	  ResponseEntity<Void> re = rt.exchange(mem.getHeaders().getLocation(), HttpMethod.DELETE, entity, Void.class);
-	  
-	  assertEquals(HttpStatus.OK, re.getStatusCode());
-	 
-	  
-  }
+	// @MockBean
+	// private Memberservice memberService;
+
+	// 서버를 구동시켜야 한다.
+	@Test
+	public void createNewMember() {
+		TestRestTemplate rt = new TestRestTemplate();
+		Member m = new Member();
+		m.setName("insang");
+		m.setEmail("insang@hansung.ac.kr");
+		m.setScore(30);
+		ResponseEntity<Member> mem = rt.postForEntity("http://localhost:8080/member", m, Member.class);
+		assertEquals("insang", mem.getBody().getName());
+		assertEquals("insang@hansung.ac.kr", mem.getBody().getEmail());
+		assertEquals(30, mem.getBody().getScore());
+	}
+
+	@Test
+	public void deleteMember() {
+
+		// 다른 웹(ex- naver)의 api를 사용하려면 이렇게!
+		TestRestTemplate rt = new TestRestTemplate();
+		Member m = new Member();
+		m.setName("insang");
+		m.setEmail("insang@hansung.ac.kr");
+		m.setScore(30);
+		ResponseEntity<Member> mem = rt.postForEntity("http://localhost:8080/member", m, Member.class);
+		//
+
+		HttpHeaders headers = new HttpHeaders();
+		HttpEntity entity = new HttpEntity(headers);
+		ResponseEntity<Void> re = rt.exchange(mem.getHeaders().getLocation(), HttpMethod.DELETE, entity, Void.class);
+
+		assertEquals(HttpStatus.OK, re.getStatusCode());
+	}
+
+	@Test
+	public void testGetMembers() {
+		// 052302 40
+		TestRestTemplate rt = new TestRestTemplate();
+
+		Member m1 = new Member();
+		m1.setName("member1");
+		m1.setEmail("member1@gmail.com");
+		m1.setScore(10);
+		ResponseEntity<Member> mem1 = rt.postForEntity("http://localhost:8080/member", m1, Member.class);
+
+		Member m2 = new Member();
+		m2.setName("member2");
+		m2.setEmail("member2@gmail.com");
+		m2.setScore(20);
+		ResponseEntity<Member> mem2 = rt.postForEntity("http://localhost:8080/member", m2, Member.class);
+
+		Member m3 = new Member();
+		m3.setName("member3");
+		m3.setEmail("member3@gmail.com");
+		m3.setScore(30);
+		ResponseEntity<Member> mem3 = rt.postForEntity("http://localhost:8080/member", m3, Member.class);
+
+		// HttpHeaders headers = new HttpHeaders();
+		// HttpEntity entity = new HttpEntity(headers);
+		ResponseEntity<Member[]> re = rt.exchange("http://localhost:8080/members", HttpMethod.GET, null,
+				Member[].class);
+		// ResponseEntity<? extends ArrayList<Member>> re =
+		// rt.getForEntity("http://localhost:8080/members", (Class<? extends
+		// ArrayList<Member>>)ArrayList.class);
+
+		Member[] mArray = re.getBody();
+		assertEquals(2, mArray.length);
+		assertEquals("insang1", mArray[0].getName());
+		assertEquals("insang2", mArray[1].getName());
+		assertEquals(20, mArray[0].getScore());
+		assertEquals(30, mArray[1].getScore());
+		assertEquals(HttpStatus.OK, re.getStatusCode());
+
+	}
 }

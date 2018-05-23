@@ -46,7 +46,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest
+//@SpringBootTest
+@WebMvcTest(DemoController.class)
 public class DemoControllerTests {
     private MockMvc mockMvc;
     
